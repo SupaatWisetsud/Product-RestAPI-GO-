@@ -40,12 +40,26 @@ func Serve(r *gin.Engine) {
 	productGroup := v1.Group("/products")
 	productController := controller.ProductController{DB: db}
 
-	productGroup.Use(authMiddleware)
+	productGroup.GET("", productController.FindAll)
+	productGroup.GET("/:id", productController.FindOne)
+
+	productGroup.Use(authMiddleware, authorizedMiddleware)
 	{
-		productGroup.GET("", productController.FindAll)
-		productGroup.GET("/:id", productController.FindOne)
 		productGroup.POST("", productController.Create)
 		productGroup.PATCH("/:id", productController.Update)
 		productGroup.DELETE("/:id", productController.Delete)
+	}
+
+	categoryGroup := v1.Group("/categorys")
+	categoryController := controller.CategoryController{DB: db}
+
+	categoryGroup.GET("", categoryController.FindAll)
+	categoryGroup.GET("/:id", categoryController.FindOne)
+
+	categoryGroup.Use(authMiddleware, authorizedMiddleware)
+	{
+		categoryGroup.POST("", categoryController.Create)
+		categoryGroup.PATCH("/:id", categoryController.Update)
+		categoryGroup.DELETE("/:id", categoryController.Delete)
 	}
 }

@@ -25,16 +25,28 @@ type productForm struct {
 }
 
 type productResponse struct {
-	ID    uint   `json:"id"`
-	Name  string `json:"name"`
-	Price uint   `json:"price"`
-	Image string `json:"image"`
+	ID         uint   `json:"id"`
+	Name       string `json:"name"`
+	Price      uint   `json:"price"`
+	Image      string `json:"image"`
+	CategoryID uint   `json:"category_id"`
+	Category   struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	} `json:"category"`
+}
+
+type productUpdate struct {
+	Name       string                `form:"name"`
+	Price      uint                  `form:"price"`
+	Image      *multipart.FileHeader `form:"image"`
+	CategoryID uint                  `form:"category_id"`
 }
 
 func (p *ProductController) FindAll(ctx *gin.Context) {
 	var product []models.Product
 
-	if err := p.DB.Find(&product).Error; err != nil {
+	if err := p.DB.Preload("Category").Find(&product).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -66,6 +78,7 @@ func (p *ProductController) Create(ctx *gin.Context) {
 	}
 
 	var product models.Product
+
 	copier.Copy(&product, &form)
 
 	if err := p.DB.Create(&product).Error; err != nil {
@@ -81,7 +94,26 @@ func (p *ProductController) Create(ctx *gin.Context) {
 }
 
 func (p *ProductController) Update(ctx *gin.Context) {
+	var form productUpdate
+	var product models.Product
 
+	if err := ctx.ShouldBind(&form); err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
+
+	p.findByID(ctx, &product)
+
+	if err := p.DB.Model(&product).Update(&form).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	p.setImageProduct(ctx, &product)
+
+	var serializedProduct productResponse
+	copier.Copy(&serializedProduct, &product)
+	ctx.JSON(http.StatusOK, gin.H{"product": serializedProduct})
 }
 
 func (p *ProductController) Delete(ctx *gin.Context) {
@@ -135,7 +167,7 @@ func (p *ProductController) findByID(ctx *gin.Context, product *models.Product) 
 
 	id := ctx.Param("id")
 
-	if err := p.DB.First(product, id).Error; err != nil {
+	if err := p.DB.Preload("Category").First(product, id).Error; err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}
