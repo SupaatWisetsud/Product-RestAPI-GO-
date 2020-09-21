@@ -21,32 +21,32 @@
 #### delete one user (permission admin)
 > DELETE /api/v1/users/:id
 
-### find all prduct 
+#### find all prduct 
 > GET /api/v1/products
 
-### find one product
+#### find one product
 > GET /api/v1/products/:id
 
-### create product (permission admin)
+#### create product (permission admin)
 > POST /api/v1/products
 
-### delete product (permission admin)
+#### delete product (permission admin)
 > DELETE /api/v1/products/:id
 
-### update product (permission admin)
+#### update product (permission admin)
 > PATCH /api/v1/product/:id
 
-### find all category 
+#### find all category 
 > GET /api/v1/categorys
 
-### find one category 
+#### find one category 
 > GET /api/v1/categorys/:id
 
-### create category (permission admin)
+#### create category (permission admin)
 > POST /api/v1/categorys
 
-### delete category (permission admin)
+#### delete category (permission admin)
 > DELETE /api/v1/categorys/:id
 
-### update category (permission admin)
+#### update category (permission admin)
 > PATCH /api/v1/categorys/:id
