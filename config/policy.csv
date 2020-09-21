@@ -1,2 +1,6 @@
 p, Admin, /api/v1/users, (GET)|(POST)
 p, Admin, /api/v1/users/*, (GET)|(DELETE)
+p, Admin, /api/v1/products, (POST)
+p, Admin, /api/v1/products/*, (PATCH)|(DELETE)
+p, Admin, /api/v1/categorys, (POST)
+p, Admin, /api/v1/categorys/*, (PATCH)|(DELETE)
